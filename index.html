@@ -39,6 +39,9 @@
             </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap justify-end">
+            <button id="openAdminAnalyticsBtn" type="button" class="bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition">
+                <i class="fa-solid fa-chart-line mr-1"></i> Dashboard
+            </button>
             <button id="openNotificationBtn" type="button" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-bell mr-1"></i> Notifications
             </button>
@@ -1828,7 +1831,7 @@
      reason: string
 ========================================================= -->
 <style>
-#siteMaintenanceAdminControl{position:fixed;right:14px;bottom:14px;z-index:999998;width:min(390px,calc(100vw - 28px));font-family:Arial,sans-serif}
+#siteMaintenanceAdminControl{display:none!important;position:fixed;right:14px;bottom:14px;z-index:999998;width:min(390px,calc(100vw - 28px));font-family:Arial,sans-serif}
 #siteMaintenanceAdminControl .sm-card{background:rgba(8,13,24,.97);border:1px solid rgba(59,130,246,.35);border-radius:18px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);backdrop-filter:blur(14px)}
 #siteMaintenanceAdminControl .sm-title{font-size:13px;font-weight:900;color:#fff;margin-bottom:5px}
 #siteMaintenanceAdminControl .sm-status{font-size:11px;font-weight:800;margin-bottom:10px}
@@ -2011,7 +2014,7 @@ document.getElementById('smReloadBtn').addEventListener('click',smLoad);
 
     </script>
 <style id="aura-premium-analytics-v2">
-#auraAnalytics{margin:0 0 18px}.aa-card{background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(7,12,22,.98));border:1px solid rgba(148,163,184,.12);box-shadow:0 14px 40px rgba(0,0,0,.22);backdrop-filter:blur(18px)}.aa-stat{position:relative;overflow:hidden}.aa-stat:after{content:"";position:absolute;inset:auto -25px -35px auto;width:90px;height:90px;border-radius:50%;background:rgba(16,185,129,.08);filter:blur(2px)}.aa-pill{border:1px solid rgba(148,163,184,.13);background:rgba(15,23,42,.75)}.aa-select{background:#080d18;border:1px solid #263247;color:#e2e8f0;border-radius:12px;padding:9px 10px;font-size:11px;font-weight:800;outline:none}.aa-table{max-height:360px;overflow:auto}.aa-row{border-bottom:1px solid rgba(148,163,184,.08)}
+#auraAnalytics{margin:0 0 18px;display:none}.aa-card{background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(7,12,22,.98));border:1px solid rgba(148,163,184,.12);box-shadow:0 14px 40px rgba(0,0,0,.22);backdrop-filter:blur(18px)}.aa-stat{position:relative;overflow:hidden}.aa-stat:after{content:"";position:absolute;inset:auto -25px -35px auto;width:90px;height:90px;border-radius:50%;background:rgba(16,185,129,.08);filter:blur(2px)}.aa-pill{border:1px solid rgba(148,163,184,.13);background:rgba(15,23,42,.75)}.aa-select{background:#080d18;border:1px solid #263247;color:#e2e8f0;border-radius:12px;padding:9px 10px;font-size:11px;font-weight:800;outline:none}.aa-table{max-height:360px;overflow:auto}.aa-row{border-bottom:1px solid rgba(148,163,184,.08)}
 </style>
 <script type="module" id="aura-analytics-v2">
 import { collection,getDocs,getDoc,doc,updateDoc,setDoc,addDoc,deleteDoc,runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -2030,10 +2033,21 @@ function ensureAnalytics(){if(document.getElementById('auraAnalytics'))return;co
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4"><div><div class="text-[10px] text-emerald-400 font-black tracking-[.22em]">AURA ARMAN TOUR</div><h2 class="text-lg font-black text-white mt-1">Admin Dashboard Analytics</h2><p class="text-[10px] text-slate-500 mt-1">Live overview • smart filters • activity protection</p></div><div class="flex gap-2"><button onclick="auraRefreshAnalytics()" class="aa-pill text-slate-200 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button><button onclick="auraShowActivity()" class="aa-pill text-amber-300 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-shield-halved mr-1"></i> Activity</button></div></div>
 <div id="aaStats" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
 <div class="grid grid-cols-3 gap-3 mt-3"><div class="aa-pill rounded-2xl p-3"><div class="text-[10px] text-slate-500 font-bold">🔴 LIVE TOURNAMENTS</div><b id="aaLive" class="text-xl text-rose-400">0</b></div><div class="aa-pill rounded-2xl p-3"><div class="text-[10px] text-slate-500 font-bold">🟡 PENDING WITHDRAWS</div><b id="aaPW" class="text-xl text-amber-400">0</b></div><div class="aa-pill rounded-2xl p-3"><div class="text-[10px] text-slate-500 font-bold">🟡 PENDING DEPOSITS</div><b id="aaPD" class="text-xl text-amber-400">0</b></div></div>
-<div class="aa-card rounded-2xl p-3 mt-4"><div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2"><b class="text-sm text-white">Transaction History Filter</b><div class="flex flex-wrap gap-2"><select id="aaType" class="aa-select" onchange="auraRenderTransactions()"><option value="all">All</option><option value="deposit">Deposit</option><option value="withdraw">Withdraw</option></select><select id="aaStatus" class="aa-select" onchange="auraRenderTransactions()"><option value="all">All Status</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select><select id="aaRange" class="aa-select" onchange="auraRenderTransactions()"><option value="today">আজ</option><option value="7">৭ দিন</option><option value="30">৩০ দিন</option><option value="all">সব</option></select><select id="aaSort" class="aa-select" onchange="auraRenderTransactions()"><option value="time">Time ↓</option><option value="amount">Amount ↓</option></select></div></div><div id="aaTransactions" class="aa-table mt-3"></div></div>
-<div class="aa-card rounded-2xl p-3 mt-4"><div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2"><b class="text-sm text-white">Tournament Quick Filter</b><div class="flex flex-wrap gap-2"><button class="aa-pill text-xs text-slate-200 px-3 py-2 rounded-xl" onclick="auraTourFilter('upcoming')">Upcoming</button><button class="aa-pill text-xs text-rose-300 px-3 py-2 rounded-xl" onclick="auraTourFilter('live')">Live</button><button class="aa-pill text-xs text-emerald-300 px-3 py-2 rounded-xl" onclick="auraTourFilter('completed')">Completed</button><button class="aa-pill text-xs text-amber-300 px-3 py-2 rounded-xl" onclick="auraTourFilter('cancelled')">Cancelled</button></div></div><div id="aaTours" class="aa-table mt-3"></div></div>
+
+
 <div class="aa-card rounded-2xl p-3 mt-4"><div class="flex items-center justify-between"><b class="text-sm text-white">🎁 Gift Code Analytics</b><button onclick="auraGiftAnalytics()" class="aa-pill text-xs text-emerald-300 px-3 py-2 rounded-xl">Refresh</button></div><div id="aaGifts" class="aa-table mt-3"></div></div>
 </div>`;main.insertBefore(el,main.firstChild)}
+document.addEventListener('DOMContentLoaded',()=>{
+  const b=document.getElementById('openAdminAnalyticsBtn');
+  if(b)b.addEventListener('click',()=>{
+    ensureAnalytics();
+    const el=document.getElementById('auraAnalytics');
+    if(!el)return;
+    el.style.display='block';
+    window.auraRefreshAnalytics?.();
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
 async function analyticsData(){const [us,ds,ws,ts,gc]=await Promise.all([getDocs(collection(db,'users')),getDocs(collection(db,'deposits')),getDocs(collection(db,'withdraws')),getDocs(collection(db,'tournaments')),getDocs(collection(db,'giftCodes'))]);return {users:us.docs.map(d=>({id:d.id,...d.data()})),deposits:ds.docs.map(d=>({id:d.id,...d.data()})),withdraws:ws.docs.map(d=>({id:d.id,...d.data()})),tours:ts.docs.map(d=>({id:d.id,...d.data()})),gifts:gc.docs.map(d=>({id:d.id,...d.data()}))}}
 let AA=null;
 window.auraRefreshAnalytics=async function(){if(aaBusy)return;aaBusy=true;try{ensureAnalytics();AA=await analyticsData();const today=dayStart();const depToday=AA.deposits.filter(x=>ts(x.createdAt||x.timestamp||x.time)>=today);const wdToday=AA.withdraws.filter(x=>ts(x.createdAt||x.timestamp||x.time)>=today);const completed=AA.tours.filter(x=>String(x.status||'').toLowerCase()==='completed');const live=AA.tours.filter(x=>String(x.status||'').toLowerCase()==='live');const prize=completed.reduce((a,x)=>a+(Number(x.totalPrizeDistributed||x.distributedPrize||0)||0),0);document.getElementById('aaStats').innerHTML=[['Users',AA.users.length,'fa-users','text-emerald-400'],['আজকের Deposit',depToday.reduce((a,x)=>a+Number(x.amount||0),0),'fa-arrow-down','text-blue-400'],['আজকের Withdraw',wdToday.reduce((a,x)=>a+Number(x.amount||0),0),'fa-arrow-up','text-rose-400'],['Active Tournament',AA.tours.filter(x=>!['completed','cancelled'].includes(String(x.status||'').toLowerCase())).length,'fa-trophy','text-amber-400'],['Completed Tournament',completed.length,'fa-check','text-emerald-300'],['Total Prize Distributed',prize,'fa-gift','text-yellow-300'],['আজকের New Users',AA.users.filter(x=>ts(x.createdAt||x.timestamp)>=today).length,'fa-user-plus','text-cyan-300'],['আজকের Tournament Entries',AA.tours.reduce((a,x)=>a+(ts(x.startTime||x.createdAt)>=today?Number((x.participants||[]).length):0),0),'fa-users-viewfinder','text-purple-300']].map(a=>`<div class="aa-card aa-stat rounded-2xl p-3"><i class="fa-solid ${a[2]} ${a[3]} text-lg"></i><div class="text-[10px] text-slate-500 font-bold mt-2">${a[0]}</div><b class="text-xl text-white">${typeof a[1]==='number'&&a[0].includes('৳')?money(a[1]):(a[0].includes('Deposit')||a[0].includes('Withdraw')||a[0].includes('Prize')?money(a[1]):Number(a[1]).toLocaleString('en-BD'))}</b></div>`).join('');document.getElementById('aaLive').textContent=live.length;document.getElementById('aaPW').textContent=AA.withdraws.filter(x=>String(x.status||'pending').toLowerCase()==='pending').length;document.getElementById('aaPD').textContent=AA.deposits.filter(x=>String(x.status||'pending').toLowerCase()==='pending').length;auraRenderTransactions();auraTourFilter('all');auraGiftAnalytics()}finally{aaBusy=false}};
